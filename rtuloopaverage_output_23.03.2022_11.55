@@ -1,0 +1,207 @@
+Python 3.9.2 (/usr/bin/python3)
+>>> %Run rtuloopaverage23.03.2022_11.30.py
+Wed Mar 23 11:54:41 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:54:51 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:55:01 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:55:11 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:55:21 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:55:31 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:55:41 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:55:51 2022
+
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+0
+Wed Mar 23 11:56:01 2022
+
+[15903, 4660, 16860, 57671, 16319, 32279, 16380, 22578]
+Wed Mar 23 11:56:01 2022
+Start of loop
+
+temp =  16860
+Wed Mar 23 11:56:01 2022
+summeTemp =  16860
+1
+Wed Mar 23 11:56:11 2022
+
+[15902, 39356, 16860, 10485, 16318, 63209, 16380, 13252]
+Wed Mar 23 11:56:11 2022
+Start of loop
+
+temp =  16860
+Wed Mar 23 11:56:11 2022
+summeTemp =  33720
+2
+Wed Mar 23 11:56:21 2022
+
+[15902, 12092, 16859, 34078, 16318, 32604, 16380, 5001]
+Wed Mar 23 11:56:21 2022
+Start of loop
+
+temp =  16859
+Wed Mar 23 11:56:21 2022
+summeTemp =  50579
+3
+Wed Mar 23 11:56:31 2022
+
+[15902, 12092, 16859, 34078, 16318, 32604, 16380, 5001]
+Wed Mar 23 11:56:31 2022
+Start of loop
+
+temp =  16859
+Wed Mar 23 11:56:31 2022
+summeTemp =  67438
+4
+Wed Mar 23 11:56:41 2022
+
+[15902, 5776, 16861, 49807, 16318, 17180, 16378, 3214]
+Wed Mar 23 11:56:41 2022
+Start of loop
+
+temp =  16861
+Wed Mar 23 11:56:41 2022
+summeTemp =  84299
+5
+Wed Mar 23 11:56:51 2022
+
+[15902, 59949, 16865, 23593, 16319, 3978, 16376, 21585]
+Wed Mar 23 11:56:51 2022
+Start of loop
+
+temp =  16865
+Wed Mar 23 11:56:51 2022
+summeTemp =  101164
+6
+
+avTemp =  16860.666666666668
+0
+End of Loop
+Wed Mar 23 11:57:01 2022
+
+[15904, 557, 16869, 18350, 16320, 10177, 16374, 47150]
+Wed Mar 23 11:57:01 2022
+Start of loop
+
+temp =  16869
+Wed Mar 23 11:57:01 2022
+summeTemp =  16869
+1
+Wed Mar 23 11:57:11 2022
+
+[15905, 55003, 16873, 2621, 16322, 8836, 16374, 21126]
+Wed Mar 23 11:57:11 2022
+Start of loop
+
+temp =  16873
+Wed Mar 23 11:57:11 2022
+summeTemp =  33742
+2
+Wed Mar 23 11:57:21 2022
+
+[15907, 36907, 16876, 36700, 16323, 64923, 16373, 58954]
+Wed Mar 23 11:57:21 2022
+Start of loop
+
+temp =  16876
+Wed Mar 23 11:57:21 2022
+summeTemp =  50618
+3
+Wed Mar 23 11:57:31 2022
+
+[15909, 3293, 16879, 44564, 16325, 37940, 16373, 26902]
+Wed Mar 23 11:57:31 2022
+Start of loop
+
+temp =  16879
+Wed Mar 23 11:57:31 2022
+summeTemp =  67497
+4
+Wed Mar 23 11:57:41 2022
+
+[15909, 28803, 16880, 15728, 16326, 633, 16373, 35379]
+Wed Mar 23 11:57:41 2022
+Start of loop
+
+temp =  16880
+Wed Mar 23 11:57:41 2022
+summeTemp =  84377
+5
+Wed Mar 23 11:57:51 2022
+
+[15912, 361, 16884, 15728, 16328, 53841, 16374, 31581]
+Wed Mar 23 11:57:51 2022
+Start of loop
+
+temp =  16884
+Wed Mar 23 11:57:51 2022
+summeTemp =  101261
+6
+
+avTemp =  16876.833333333332
+0
+End of Loop
+Wed Mar 23 11:58:01 2022
+
+[15914, 4190, 16887, 23593, 16331, 4768, 16375, 15580]
+Wed Mar 23 11:58:01 2022
+Start of loop
+
+temp =  16887
+Wed Mar 23 11:58:01 2022
+summeTemp =  16887
+1
+Wed Mar 23 11:58:11 2022
+
+Modbus Error: [Input/Output] [Errno 5] Input/output error

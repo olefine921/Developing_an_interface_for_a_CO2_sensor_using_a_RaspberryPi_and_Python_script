@@ -1,0 +1,34 @@
+Python 3.9.2 (/usr/bin/python3)
+>>> %Run Loop_WithAverage.py
+Wed Mar 23 10:30:41 2022
+pCO2 =  15960
+21648
+Wed Mar 23 10:30:41 2022
+summePCO2 =  15960
+21648
+2
+pCO2 =  15960
+21648
+Wed Mar 23 10:30:51 2022
+summePCO2 =  31920
+43296
+3
+pCO2 =  15960
+21648
+Wed Mar 23 10:31:01 2022
+summePCO2 =  47880
+64944
+4
+pCO2 =  15960
+21648
+Wed Mar 23 10:31:11 2022
+summePCO2 =  63840
+86592
+5
+pCO2 =  15960
+21648
+Wed Mar 23 10:31:21 2022
+summePCO2 =  79800
+108240
+6
+>>> 

@@ -1,0 +1,208 @@
+from pymodbus.client.sync import ModbusSerialClient  # Import the pymodbus library part for syncronous master (=client)
+from time import time, ctime, sleep #import the time library
+import csv #Import the csv library
+
+client = ModbusSerialClient(
+    method='rtu',  # Modbus Modus = RTU = via USB & RS485
+    port='/dev/ttyUSB0',  # Connected over ttyUSB0, not AMA0
+    baudrate=19200,  # Baudrate was changed from 38400 to 19200
+    timeout=3,  #
+    parity='N',  # Parity = None
+    stopbits=2,  # Bites was changed from 1 to 2
+    bytesize=8  #
+)
+# Counter
+counter1 = 0 #For getting the sum of 6 data points and getting the average after counter = 6
+counter2 = 0
+
+# Variables
+t = 0
+
+pCO2 = 0
+temp = 0
+mbar = 0
+DLI = 0
+
+summePCO2 = 0
+summeTemp = 0
+summembar = 0
+summeDLI = 0
+
+avPCO2 = 0
+avTemp = 0
+avmbar = 0
+avDLI = 0
+
+# Header CSV File
+header = ["Timestamp", "pCo2", "Temp in C", "mbar", "DLI"]
+csvRow = []
+
+# Array for Plotting
+
+plotPCO2 = []
+plotTemp = []
+
+plotTime1 = 0
+plotTime2 = 0
+
+"""with open('/media/pi/boot/pCO2_Sensor_Data/Test'+ 1 +'.csv', 'w') as file:
+
+    writer = csv.writer(file)
+    
+    writer.writerow(header)"""
+
+
+
+while counter1 < 8:
+    t = time()
+    dateForCSV = ctime(t)
+    print('Start of loop')
+    print(dateForCSV)
+    print('')
+
+    if client.connect():  # Trying to connect to Modbus Server/Slave
+        # Reading from a holding register
+        res = client.read_holding_registers(address=100, count=8,
+                                            unit=1)  # Startregister = 100, Registers to be read = 8, Answer size = 1 byte
+
+        if not res.isError():  # If Registers don't show Error
+            print(res.registers)  # Print content of registers
+
+
+            pCO2 = res.registers[0]
+            temp = res.registers[2]
+            mbar = res.registers[4]
+            DLI = res.registers[6]
+
+            print('')
+            print('temp = ', temp)
+
+            summePCO2 += pCO2
+            summeTemp += temp
+            summembar += mbar
+            summeDLI += DLI
+
+            print('summeTemp = ', summeTemp)
+
+            counter1 += 1
+
+            print(counter1)
+
+            if counter1 == 6:
+                # Calculate Average for 1 Min
+
+                avPCO2 = summePCO2 / 6
+                avTemp = summeTemp / 6
+                avmbar = summembar / 6
+                avDLI = summeDLI / 6
+                
+                t = time()
+                dateForCSV = ctime(t)
+                
+                csvRow.append(dateForCSV)
+                csvRow.append(avPCO2)
+                csvRow.append(avTemp)
+                csvRow.append(avmbar)
+                csvRow.append(avDLI)
+                
+                plotPCO2.append(avPCO2)
+                plotTemp.append(avTemp)
+                counter2 += 1
+                print(plotPCO2)
+                
+                if counter2 == 0:
+                    plotTime1 = "[insert Start Time]"
+                                    
+                
+                if counter2 == 60:
+                
+                    plotTime2 = "[insert End Time]"
+                    fig, ax1 = plt.subplots()
+                    
+                    pplt.suptitle("Average pCO2 and Temp from " + plotTime1 + " to " + plotTime2)
+
+                    color = 'tab:red'
+                    ax1.set_xlabel('time (min)')
+                    ax1.set_ylabel('pCO2', color = color)
+                    ax1.plot(plotPCO2, color = color)
+
+                    ax2 = ax1.twinx()
+
+                    color = 'tab:blue'
+                    ax2.set_ylabel('Temp', color = color)
+                    ax2.plot(plotTemp, color = color)
+
+                    fig.tight_layout()
+                    
+                    fig.savefig('/home/pi/Documents/Figures/LoopTest.png')
+
+                    plt.show()
+                    
+                    
+                    
+                    counter2 == 0
+
+                
+                print(csvRow)
+                
+                """
+                with open('/media/pi/boot/pCO2_Sensor_Data/Test'+'1'+'.csv', 'a') as file:
+
+                    writer = csv.writer(file)
+                    
+                    writer.writerow(csvRow)"""
+
+                
+                
+                print('')
+                print('----------------------------------------------------------------')
+                print('avTemp = ', avTemp)
+                print('')
+                print('End of Loop')
+                print('----------------------------------------------------------------')
+                
+                #set every variable back to 0
+                counter1 = 0
+                pCO2 = 0
+                temp = 0
+                mbar = 0
+                DLI = 0
+
+                summePCO2 = 0
+                summeTemp = 0
+                summembar = 0
+                summeDLI = 0
+
+                avPCO2 = 0
+                avTemp = 0
+                avmbar = 0
+                avDLI = 0
+                
+                #clear csvRow-List
+                csvRow.pop(0) #delete 1. element -> Timestamp
+                csvRow.pop(0) #delete new 1. element -> avPCO2
+                csvRow.pop(0) #delete new 1. element -> Temp
+                csvRow.pop(0) #delete new 1. element -> mbar
+                csvRow.pop(0) #delete last element
+                
+
+                sleep(10)  # Stops Loop for 10sec
+
+            else:
+
+                sleep(10)  # Stops Loop for 10sec
+
+        else:
+            print(res)  # Print Error Message, for meaning look at (insert git hub)
+            counter1 = 0
+            sleep(10)  # Stops Loop for 10sec
+
+    else:  # If not able to connect, do this
+        print('Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.')
+        print('----------------------------------------------------------------')
+        print('Please check the following things:')
+        print('Does the RS485-to-USB Adapter have power? Which LEDs are active?')
+        print('Are the cables connected correctly?')
+
+        counter1 = 0
+        sleep(10)  # Stops Loop for 10sec

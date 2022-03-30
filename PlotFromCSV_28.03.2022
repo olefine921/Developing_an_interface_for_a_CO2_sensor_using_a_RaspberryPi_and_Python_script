@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import csv
+
+date = []
+x =[]
+avPCO2 = []
+avTemp = []
+
+with open('/media/pi/boot/pCO2_Sensor_Data/Test4.csv', 'r') as csvfile:
+    plots = csv.reader(csvfile, delimiter = ',')
+    
+    for row in plots:
+        x.append(row[1])
+        avPCO2.append(float(row[2]))
+        avTemp.append(float(row[3]))
+        date.append(row[0])
+        
+fig, ax1 = plt.subplots()
+
+plt.suptitle("Average pCO2 and Temp starting by " + date[0])
+
+color = 'tab:red'
+ax1.set_xlabel('time (min)')
+ax1.set_ylabel('pCO2', color = color)
+ax1.plot(x,avPCO2, color = color)
+plt.xticks(rotation = 25)
+
+ax2 = ax1.twinx()
+
+color = 'tab:blue'
+ax2.set_ylabel('avTemp', color = color)
+ax2.plot(avTemp, color = color)
+
+fig.tight_layout()
+
+fig.savefig('/media/pi/boot/pCO2_Sensor_Data/Test4d.png')
+
+plt.show()

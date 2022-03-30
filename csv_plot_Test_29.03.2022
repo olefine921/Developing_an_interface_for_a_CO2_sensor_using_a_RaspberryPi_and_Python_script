@@ -1,0 +1,52 @@
+from pymodbus.client.sync import ModbusSerialClient  # Import the pymodbus library part for syncronous master (=client)
+from pymodbus.payload import BinaryPayloadDecoder
+from time import time, ctime, sleep #import the time library
+from datetime import datetime, date, timedelta
+import matplotlib.pyplot as plt
+import numpy as np
+import csv #Import the csv library
+
+startTime = datetime.now()
+loopedTime = 0
+csvTimeCounter = 0
+
+date = []
+x =[]
+plotAvPCO2 = []
+plotAvTemp = []
+
+with open('/media/pi/boot/pCO2_Sensor_Data/Test3.csv', 'r') as csvfile:
+    plots = csv.reader(csvfile, delimiter = ',')
+    
+    for row in plots:
+        x.append(row[1])
+        plotAvPCO2.append(float(row[2]))
+        plotAvTemp.append(float(row[3]))
+        date.append(row[0])
+                        
+fig, ax1 = plt.subplots()
+
+plt.suptitle("Average pCO2 and Temp starting by " + date[0])
+
+color = 'tab:red'
+ax1.set_xlabel('time (min)')
+ax1.set_ylabel('pCO2', color = color)
+ax1.plot(x,plotAvPCO2, color = color)
+plt.xticks(rotation = 25)
+
+ax2 = ax1.twinx()
+
+color = 'tab:blue'
+ax2.set_ylabel('avTemp', color = color)
+ax2.plot(plotAvTemp, color = color)
+
+fig.tight_layout()
+
+
+fig.savefig('/media/pi/boot/pCO2_Sensor_Data/Test3.png')
+
+plt.show(block=False)
+
+sleep(10)  # Stops Loop for 10sec
+
+plt.close('all')
