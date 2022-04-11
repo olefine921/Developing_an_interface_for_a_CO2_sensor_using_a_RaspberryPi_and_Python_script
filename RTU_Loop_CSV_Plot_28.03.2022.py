@@ -26,16 +26,19 @@ pCO2 = 0
 temp = 0
 mbar = 0
 DLI = 0
+calibration = 0
 
-summePCO2 = 0
-summeTemp = 0
-summembar = 0
-summeDLI = 0
+summePCO2 = []
+summeTemp = []
+summembar = []
+summeDLI = []
+sumcalibratine = []
 
 avPCO2 = 0
 avTemp = 0
 avmbar = 0
 avDLI = 0
+avCalibration = 0
 
 first_reading = 0
 second_reading = 0
@@ -56,10 +59,10 @@ plotAvTemp = []
 #header = ["Timestamp", "pCo2", "Temp in C", "mbar", "DLI"]
 csvRow = []
 
-adresse = '/media/pi/boot/pCO2_Sensor_Data/' + str(startTime)
+#adresse = '/media/pi/boot/pCO2_Sensor_Data/' + str(startTime)
 
 
-with open('/media/pi/boot/pCO2_Sensor_Data/Test'+'7' + '.csv', 'w') as file:
+with open('/home/pi/Desktop/Kalibration_1' + '.csv', 'w') as file:
 
     writer = csv.writer(file)
     
@@ -98,14 +101,17 @@ while counter1 < 8:
             temp = second_reading
             mbar = third_reading
             DLI = fourth_reading
+            
+            calibration = res.registers[0]
 
             #print('')
             #print('temp = ', temp)
 
-            summePCO2 += pCO2
-            summeTemp += temp
-            summembar += mbar
-            summeDLI += DLI
+            summePCO2.append(pCO2) #summePCO2 is the array of the pCO2s
+            summeTemp.append(temp)
+            summembar.append(mbar)
+            summeDLI.append(DLI)
+            sumcalibratine.append(calibration)
 
             #print('summeTemp = ', summeTemp)
 
@@ -116,10 +122,18 @@ while counter1 < 8:
             if counter1 == 6:
                 # Calculate Average for 1 Min
 
-                avPCO2 = summePCO2 / 6
-                avTemp = summeTemp / 6
-                avmbar = summembar / 6
-                avDLI = summeDLI / 6
+                avPCO2 = np.median(summePCO2)
+
+                print(summePCO2)
+                print(avPCO2)
+                avTemp = np.median(summeTemp)
+                print(avTemp)
+                avmbar = np.median(summembar)
+                print(avmbar)
+                avDLI = np.median(summeDLI)
+                print(avDLI)
+                
+                avCalibration = np.median(sumcalibratine)
                 
                 t = time()
                 dateForCSV = ctime(t)
@@ -137,11 +151,14 @@ while counter1 < 8:
                 
                 print(csvRow)
                 
-                with open('/media/pi/boot/pCO2_Sensor_Data/Test'+'7'+'.csv', 'a') as file:
+                with open('/home/pi/Desktop/Kalibration_1'+'.csv', 'a') as file:
 
                     writer = csv.writer(file)
                     
                     writer.writerow(csvRow)
+                    #writer.writerow(int(avCalibration))
+                    
+                    """
 
                 with open('/media/pi/boot/pCO2_Sensor_Data/Test7.csv', 'r') as csvfile:
                     plots = csv.reader(csvfile, delimiter = ',')
@@ -186,8 +203,8 @@ while counter1 < 8:
                 fig.clear()
 
 
-                print('----------------------------------------------------------------')
-                
+                print('----------------------------------------------------------------')"""
+                sleep(10)
                 
                 #set every variable back to 0
                 counter1 = 0
@@ -196,10 +213,11 @@ while counter1 < 8:
                 mbar = 0
                 DLI = 0
 
-                summePCO2 = 0
-                summeTemp = 0
-                summembar = 0
-                summeDLI = 0
+                summePCO2 = []
+                summeTemp = []
+                summembar = []
+                summeDLI = []
+                sumcalibatine =[]
 
                 avPCO2 = 0
                 avTemp = 0
@@ -213,7 +231,7 @@ while counter1 < 8:
                 csvRow.pop(0) #delete new 1. element -> mbar
                 csvRow.pop(0)
                 csvRow.pop(0) #delete last element
-                
+                avCalibration =0
                 loopedTime = 0
                 csvTimeCounter = 0
                 
@@ -225,6 +243,7 @@ while counter1 < 8:
             else:
 
                 sleep(10)  # Stops Loop for 10sec
+                print('')
 
         else:
             print(res)  # Print Error Message, for meaning look at (insert git hub)
