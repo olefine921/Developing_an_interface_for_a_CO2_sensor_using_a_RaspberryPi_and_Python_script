@@ -17,7 +17,8 @@ client = ModbusSerialClient(
 )
 # Counter
 counter1 = 0  # For getting the sum of 6 data points and getting the average after counter = 6
-counter2 = 1
+counter2 = 0
+setCounter = 0
 
 # Variables
 t = 0
@@ -32,18 +33,22 @@ summePCO2 = []
 summeTemp = []
 summembar = []
 summeDLI = []
-sumcalibratine = []
+
 
 avPCO2 = 0
 avTemp = 0
 avmbar = 0
 avDLI = 0
-avCalibration = 0
+
 
 first_reading = 0
 second_reading = 0
 third_reading = 0
 fourth_reading = 0
+
+# calibration Variables (specific)
+calibrationPCO2 = []
+calibrationX = []
 
 # variables only for plotting
 startTime = datetime.now()
@@ -61,182 +66,169 @@ csvRow = []
 
 # adresse = '/media/pi/boot/pCO2_Sensor_Data/Calibration' + str(startTime)
 
-
 with open('/home/pi/Desktop/Calibration' + '.csv', 'w') as file:
     writer = csv.writer(file)
 
     writer.writerow(header)
 
-# get input for Temp
-realTemp = float(input('Please give the mbar as a float and confirm with Enter:   '))
+
+
+print('Please prepare the following probes:')
+print('1. 0.1 mbar')
+print('2. 1.0 mbar')
+print('3. 5.0 mbar')
+print('4. 10.0 mbar')
+print('')
+setCounter = int(input('Please enter how many probes will be used for this calibration and confirm with Enter:    '))
+realTemp = float(input('Please give the mbar of the first probe as a float and confirm with Enter:   '))
 
 while counter1 < 8:
-    t = time()
-    dateForCSV = ctime(t)
-    print('Start of loop')
-    print(dateForCSV)
-    print('')
+    while counter2 < setCounter:
+        t = time()
+        dateForCSV = ctime(t)
 
-    if client.connect():  # Trying to connect to Modbus Server/Slave
-        # Reading from a holding register
-        res = client.read_holding_registers(address=100, count=8,
-                                            unit=1)  # Startregister = 100, Registers to be read = 8, Answer size = 1 byte
+        print('')
 
-        decoder = BinaryPayloadDecoder.fromRegisters(res.registers, byteorder='>', wordorder='>')
+        if client.connect():  # Trying to connect to Modbus Server/Slave
+            # Reading from a holding register
+            res = client.read_holding_registers(address=100, count=8,
+                                                unit=1)  # Startregister = 100, Registers to be read = 8, Answer size = 1 byte
 
-        first_reading = decoder.decode_32bit_float()
-        second_reading = decoder.decode_32bit_float()
-        third_reading = decoder.decode_32bit_float()
-        fourth_reading = decoder.decode_32bit_float()
+            decoder = BinaryPayloadDecoder.fromRegisters(res.registers, byteorder='>', wordorder='>')
 
-        if not res.isError():  # If Registers don't show Error
-            # print(res.registers)  # Print content of registers
-            # print(first_reading)
-            # print(second_reading)
-            # print(third_reading)
-            # print(fourth_reading)
+            first_reading = decoder.decode_32bit_float()
+            second_reading = decoder.decode_32bit_float()
+            third_reading = decoder.decode_32bit_float()
+            fourth_reading = decoder.decode_32bit_float()
 
-            pCO2 = first_reading
-            temp = second_reading
-            mbar = third_reading
-            DLI = fourth_reading
+            if not res.isError():  # If Registers don't show Error
+                # print(res.registers)  # Print content of registers
+                # print(first_reading)
+                # print(second_reading)
+                # print(third_reading)
+                # print(fourth_reading)
+
+                pCO2 = first_reading
+                temp = second_reading
+                mbar = third_reading
+                DLI = fourth_reading
 
 
-            # print('')
-            # print('temp = ', temp)
+                # print('')
+                # print('temp = ', temp)
 
-            summePCO2.append(pCO2)  # summePCO2 is the array of the pCO2s
-            summeTemp.append(temp)
-            summembar.append(mbar)
-            summeDLI.append(DLI)
+                summePCO2.append(pCO2)  # summePCO2 is the array of the pCO2s
+                summeTemp.append(temp)
+                summembar.append(mbar)
+                summeDLI.append(DLI)
 
-            # print('summeTemp = ', summeTemp)
+                # print('summeTemp = ', summeTemp)
 
-            counter1 += 1
+                counter1 += 1
 
-            print(counter1)
+                print(counter1)
 
-            if counter1 == 6:
-                # Calculate Median over 1 Min
+                if counter1 == 6:
+                    # Calculate Median over 1 Min
 
-                avPCO2 = np.median(summePCO2)
-                avTemp = np.median(summeTemp)
-                avmbar = np.median(summembar)
-                avDLI = np.median(summeDLI)
+                    avPCO2 = np.median(summePCO2)
+                    avTemp = np.median(summeTemp)
+                    avmbar = np.median(summembar)
+                    avDLI = np.median(summeDLI)
 
-                t = time()
-                dateForCSV = ctime(t)
+                    t = time()
+                    dateForCSV = ctime(t)
 
-                loopedTime = datetime.now()
-                csvTimeCounter = loopedTime - startTime
+                    loopedTime = datetime.now()
+                    csvTimeCounter = loopedTime - startTime
 
-                csvRow.append(dateForCSV)
-                csvRow.append(csvTimeCounter)
-                csvRow.append(realTemp)
-                csvRow.append(avPCO2)
-                csvRow.append(avTemp)
-                csvRow.append(avmbar)
-                csvRow.append(avDLI)
+                    csvRow.append(dateForCSV)
+                    csvRow.append(csvTimeCounter)
+                    csvRow.append(realTemp)
+                    csvRow.append(avPCO2)
+                    csvRow.append(avTemp)
+                    csvRow.append(avmbar)
+                    csvRow.append(avDLI)
 
-                print(csvRow)
+                    calibrationPCO2.append(avPCO2)
+                    calibrationX.append(realTemp)
 
-                with open('/home/pi/Desktop/Kalibration_1' + '.csv', 'a') as file:
+                    #print(csvRow)
+                    print('pCO2')
 
-                    writer = csv.writer(file)
+                    with open('/home/pi/Desktop/Kalibration_1' + '.csv', 'a') as file:
 
-                    writer.writerow(csvRow)
-                    # writer.writerow(int(avCalibration))
+                        writer = csv.writer(file)
 
-                    """
-                with open('/media/pi/boot/pCO2_Sensor_Data/Test7.csv', 'r') as csvfile:
-                    plots = csv.reader(csvfile, delimiter = ',')
+                        writer.writerow(csvRow)
+                        # writer.writerow(int(avCalibration))
 
-                    for row in plots:
-                        x.append(row[1])
-                        plotAvPCO2.append(float(row[2]))
-                        plotAvTemp.append(float(row[3]))
-                        date.append(row[0])
+                    counter2 += 1
+                    #sleep(10)
 
-                fig, ax1 = plt.subplots(figsize=(25, 15))
-                plt.suptitle("Average pCO2 and Temp starting by " + date[0])
+                    # set every variable back to 0
+                    counter1 = 0
+                    pCO2 = 0
+                    temp = 0
+                    mbar = 0
+                    DLI = 0
+                    realTemp = 0
 
-                print(x)
-                print(plotAvPCO2)
-                print(plotAvTemp)
-                color = 'tab:red'
-                ax1.set_xlabel('time (min)')
-                ax1.set_xticks(np.arange(0, len(x)+1, 10))
-                ax1.set_ylabel('pCO2 in %', color = color)
-                ax1.plot(x,plotAvPCO2, color = color)
-                plt.xticks(rotation = 25)
-                ax2 = ax1.twinx()
-                color = 'tab:blue'
-                ax2.set_ylabel('avTemp in °C', color = color)
-                ax2.plot(plotAvTemp, color = color)
-                fig.tight_layout()
+                    summePCO2 = []
+                    summeTemp = []
+                    summembar = []
+                    summeDLI = []
 
-                fig.savefig('/media/pi/boot/pCO2_Sensor_Data/Test7.png')
-                plt.show(block=False)
+                    avPCO2 = 0
+                    avTemp = 0
+                    avmbar = 0
+                    avDLI = 0
 
-                sleep(10)  # Stops Loop for 10sec
+                    # clear csvRow-List
+                    csvRow.pop(0)  # delete 1. element -> Timestamp
+                    csvRow.pop(0)  # delete new 1. element -> avPCO2
+                    csvRow.pop(0)  # delete new 1. element -> Temp
+                    csvRow.pop(0)  # delete new 1. element -> mbar
+                    csvRow.pop(0)
+                    csvRow.pop(0)  # delete last element
+                    avCalibration = 0
+                    loopedTime = 0
+                    csvTimeCounter = 0
 
-                plt.close('all')
-                fig.clear()
-                print('----------------------------------------------------------------')"""
-                sleep(10)
+                    x = []
+                    plotAvPCO2 = []
+                    plotAvTemp = []
 
-                # set every variable back to 0
-                counter1 = 0
-                pCO2 = 0
-                temp = 0
-                mbar = 0
-                DLI = 0
-                realTemp = 0
+                    realTemp = float(input('Please give the mbar of the next probe as a float and confirm with Enter:   '))
 
-                summePCO2 = []
-                summeTemp = []
-                summembar = []
-                summeDLI = []
+                else:
 
-                avPCO2 = 0
-                avTemp = 0
-                avmbar = 0
-                avDLI = 0
+                    #sleep(10)  # Stops Loop for 10sec
+                    print('')
 
-                # clear csvRow-List
-                csvRow.pop(0)  # delete 1. element -> Timestamp
-                csvRow.pop(0)  # delete new 1. element -> avPCO2
-                csvRow.pop(0)  # delete new 1. element -> Temp
-                csvRow.pop(0)  # delete new 1. element -> mbar
-                csvRow.pop(0)
-                csvRow.pop(0)  # delete last element
-                avCalibration = 0
-                loopedTime = 0
-                csvTimeCounter = 0
-
-                x = []
-                plotAvPCO2 = []
-                plotAvTemp = []
-
-                realTemp = float(input('Please give the mbar as a float and confirm with Enter:   '))
 
             else:
-
+                print(res)  # Print Error Message, for meaning look at (insert git hub)
+                counter1 = 0
                 sleep(10)  # Stops Loop for 10sec
-                print('')
 
+        else:  # If not able to connect, do this
+            print('Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.')
+            print('----------------------------------------------------------------')
+            print('Please check the following things:')
+            print('Does the RS485-to-USB Adapter have power? Which LEDs are active?')
+            print('Are the cables connected correctly?')
 
-        else:
-            print(res)  # Print Error Message, for meaning look at (insert git hub)
             counter1 = 0
             sleep(10)  # Stops Loop for 10sec
 
-    else:  # If not able to connect, do this
-        print('Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.')
-        print('----------------------------------------------------------------')
-        print('Please check the following things:')
-        print('Does the RS485-to-USB Adapter have power? Which LEDs are active?')
-        print('Are the cables connected correctly?')
-
-        counter1 = 0
-        sleep(10)  # Stops Loop for 10sec
+    # calculate the slope
+    print('The slope for this calibration is:')
+    slope, intercept = np.polyfit(calibrationX, calibrationPCO2, 1)
+    print(slope)
+    # calculate r^2
+    print('R^2 for this calibration is:')
+    correlationMatrix = np.corrcoef(calibrationX, calibrationPCO2)
+    correlation = correlationMatrix[0,1]
+    rSq = correlation**2
+    print(rSq)
