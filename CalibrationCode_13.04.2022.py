@@ -65,16 +65,16 @@ plotAvTemp = []
 header = ["Timestamp", "Time since start", "Probe", "pCo2", "Temp in C", "mbar", "DLI"]
 csvRow = []
 
-# adresse = '/media/pi/boot/pCO2_Sensor_Data/Calibration' + str(startTime)
+# adresse = '/media/pi/boot/pCO2_Sensor_Data/Calibration' + str(startTime)  ->find solution for adresse because of usb dock space problems
 
-with open('/home/pi/Desktop/Calibration' + '.csv', 'w') as file:
+with open('/home/pi/Desktop/Calibration_13.04.2022_2' + '.csv', 'w') as file:
     writer = csv.writer(file)
 
     writer.writerow(header)
 
 
 
-print('Please prepare the following probes:')
+print('Please prepare the following probes:') #Probes should be on a brought spectrum
 print('1. 0.1 mbar')
 print('2. 1.0 mbar')
 print('3. 5.0 mbar')
@@ -158,11 +158,10 @@ while counter1 < 8:
                     calibrationPCO2.append(avPCO2)
                     calibrationX.append(realTemp)
 
-                    #print(csvRow)
-                    #print('pCO2')
-                    #print(avPCO2)
 
-                    with open('/home/pi/Desktop/Calibration' + '.csv', 'a') as file:
+                    print('pCO2 = ' + avPCO2)
+                    print('')
+                    with open('/home/pi/Desktop/Calibration_13.04.2022_2' + '.csv', 'a') as file:
 
                         writer = csv.writer(file)
 
@@ -170,7 +169,7 @@ while counter1 < 8:
                         # writer.writerow(int(avCalibration))
 
                     counter2 += 1
-                    #sleep(10)
+                    sleep(10)
 
                     # set every variable back to 0
                     counter1 = 0
@@ -211,7 +210,7 @@ while counter1 < 8:
 
                 else:
 
-                    #sleep(10)  # Stops Loop for 10sec
+                    sleep(10)  # Stops Loop for 10sec
                     print('')
 
 
@@ -230,7 +229,7 @@ while counter1 < 8:
             counter1 = 0
             sleep(10)  # Stops Loop for 10sec
 
-    # calculate the slope
+    # calculate the slope & intercept
     print('')
     #print(calibrationPCO2)
     #print(calibrationX)
@@ -239,6 +238,10 @@ while counter1 < 8:
     
     slope, intercept = np.polyfit(calibrationX, calibrationPCO2,1)
     print(slope)
+    
+    print('')
+    print('The intercept for this calibration is:')
+    print(intercept)
     
     # calculate r^2
     print('')
@@ -256,12 +259,13 @@ while counter1 < 8:
     print(rSq)
     
     divider = []
-    headerCalculations = ["Slope", "R^2"]
+    headerCalculations = ["Slope", "Intercept", "R^2"]
     csvRow = []
     csvRow.append(slope)
+    csvRow.append(intercept)
     csvRow.append(rSq)
     
-    with open('/home/pi/Desktop/Calibration' + '.csv', 'a') as file:
+    with open('/home/pi/Desktop/Calibration_13.04.2022_2' + '.csv', 'a') as file:
 
                         writer = csv.writer(file)
                         writer.writerow(divider)

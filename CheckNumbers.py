@@ -17,7 +17,7 @@ client = ModbusSerialClient(
 )
 # Counter
 counter1 = 0 #For getting the sum of 6 data points and getting the average after counter = 6
-counter2 = 1
+counter2 = 0
 
 # Variables
 t = 0
@@ -74,7 +74,7 @@ intercept = float(input('Give the intercept from the calibration as a float and 
 
 
 while counter1 < 8:
-    while counter2 < 9:
+    while counter2 < 10:
         t = time()
         dateForCSV = ctime(t)
         print('Start of loop')

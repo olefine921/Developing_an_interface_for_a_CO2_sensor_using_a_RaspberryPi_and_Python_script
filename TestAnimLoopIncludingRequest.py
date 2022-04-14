@@ -19,6 +19,7 @@ client = ModbusSerialClient(
 # Counter
 counter1 = 0 #For getting the sum of 6 data points and getting the average after counter = 6 => get the average of 1 minute
 counter2 = 0
+counter3 = 0
 
 # Variables
 t = 0
@@ -48,6 +49,16 @@ startTime = datetime.now()
 loopedTime = 0
 csvTimeCounter = 0
 
+csvRow = []
+
+now = datetime.now()
+adresseDate = now.strftime("%d.%m.%Y")
+adresse = '/home/pi/Desktop/CSV_' + adresseDate  #trying to outsource the naming of the saved documents
+
+
+with open(adresse + '.csv', 'w') as file: #creating & defining the csv-file
+
+    writer = csv.writer(file)
 
 
 fig, (ax1, ax2) = plt.subplots(2)
@@ -60,7 +71,8 @@ plotAvPCO2 = []
 plotAvTemp = []
 
 def animate(i, x, plotAvPCO2, plotAvTemp):
-    while counter1 < 8:
+    global counter1, summePCO2, summeTemp, summembar, summeDLI, csvRow
+    while counter1 < 6:
         t = time()
         dateForCSV = ctime(t)
 
@@ -101,7 +113,7 @@ def animate(i, x, plotAvPCO2, plotAvTemp):
 
                 counter1 += 1
 
-                print(counter1)
+                #print(counter1)
 
                 if counter1 == 6:
                     # Calculate Average for 1 Min
@@ -122,6 +134,21 @@ def animate(i, x, plotAvPCO2, plotAvTemp):
 
                     loopedTime = datetime.now()
                     csvTimeCounter = loopedTime - startTime
+                    
+                    csvRow.append(dateForCSV)
+                    csvRow.append(csvTimeCounter)
+                    csvRow.append(avPCO2)
+                    csvRow.append(avTemp)
+                    csvRow.append(avmbar)
+                    csvRow.append(avDLI)
+
+                    #print(csvRow)
+
+                    with open(adresse +'.csv', 'a') as file:
+
+                        writer = csv.writer(file)
+
+                        writer.writerow(csvRow)
                     # sleep(10)  # Stops Loop for 10sec
 
                     x.append(datetime.now().strftime('%H:%M:%S.%f'))
@@ -152,7 +179,7 @@ def animate(i, x, plotAvPCO2, plotAvTemp):
 
                     fig.tight_layout()
 
-                    plt.show(block=False)
+                    
 
                     print(plotAvPCO2)
                     print(plotAvTemp)
@@ -160,7 +187,7 @@ def animate(i, x, plotAvPCO2, plotAvTemp):
                     print('----------------------------------------------------------------')
 
                     # set every variable back to 0
-                    counter1 = 0
+
                     pCO2 = 0
                     temp = 0
                     mbar = 0
@@ -210,7 +237,12 @@ def animate(i, x, plotAvPCO2, plotAvTemp):
     
 
 
+while counter3 <1440:
+    
 
-
-ani = animation.FuncAnimation(fig, animate, fargs=(x, plotAvPCO2, plotAvTemp),
-                                                  interval=1000)  # 60000 = 1Min
+    ani = animation.FuncAnimation(fig, animate, fargs=(x, plotAvPCO2, plotAvTemp),
+                                                  interval=60000)  # 60000 = 1Min
+    plt.show(block=False)
+    print(counter3)
+    counter1 = 0
+    counter3 +=1

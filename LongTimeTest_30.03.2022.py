@@ -61,7 +61,7 @@ csvRow = []
 
 now = datetime.now()
 adresseDate = now.strftime("%d.%m.%Y_%H.%M")
-adresse = '/media/pi/boot/pCO2_Sensor_Data/' + adresseDate  #trying to outsource the naming of the saved documents
+adresse = '/home/pi/Desktop' + adresseDate  #trying to outsource the naming of the saved documents
 
 
 with open(adresse + '.csv', 'w') as file: #creating & defining the csv-file
@@ -155,6 +155,8 @@ while counter1 < 8:
                         writer.writerow(csvRow)
 
                     counter2 += 1
+                    
+                    """
 
                     with open(adresse + '.csv', 'r') as csvfile:
                         plots = csv.reader(csvfile, delimiter = ',')
@@ -202,6 +204,8 @@ while counter1 < 8:
 
                     plt.close('all')
                     fig.clear()
+                    
+                    """
 
 
                     print('----------------------------------------------------------------')
@@ -238,9 +242,9 @@ while counter1 < 8:
                     plotAvTemp = []
 
 
-                else:
+                #else:
 
-                    sleep(10)  # Stops Loop for 10sec
+                    #sleep(10)  # Stops Loop for 10sec
 
             else:
                 print(res)  # Print Error Message, for meaning look at (insert git hub)
