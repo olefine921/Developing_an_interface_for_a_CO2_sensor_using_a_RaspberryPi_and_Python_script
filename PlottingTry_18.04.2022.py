@@ -51,9 +51,10 @@ loopedTime = 0
 csvTimeCounter = 0
 
 date = []
-x =[-20:]
-plotAvPCO2 = [-20:]
-plotAvTemp = [-20:]
+x =[]
+plotAvPCO2 = []
+plotAvTemp = []
+i = 0
 
 # Header CSV File
 #header = ["Timestamp", "pCo2", "Temp in C", "mbar", "DLI"]
@@ -62,7 +63,7 @@ csvRow = []
 #adresse = '/media/pi/boot/pCO2_Sensor_Data/' + str(startTime)
 
 
-with open('/home/pi/Desktop/Kalibration_1' + '.csv', 'w') as file:
+with open('/home/pi/Desktop/Test20.04.2022_1' + '.csv', 'w') as file:
 
     writer = csv.writer(file)
     
@@ -119,9 +120,16 @@ while counter1 < 8:
             counter1 += 1
 
             print(counter1)
+            """
+            if counter1 == 5:
+                plt.close()
+            else:
+                print("----") """
 
             if counter1 == 6:
                 # Calculate Average for 1 Min
+                
+                
 
                 avPCO2 = np.median(summePCO2)
 
@@ -153,44 +161,56 @@ while counter1 < 8:
                 
                 print(csvRow)
                 
-                with open('/home/pi/Desktop/Kalibration_1'+'.csv', 'a') as file:
+                with open('/home/pi/Desktop/Test20.04.2022_1'+'.csv', 'a') as file:
 
                     writer = csv.writer(file)
                     
                     writer.writerow(csvRow)
                     #writer.writerow(int(avCalibration))
 
+                csvTimeCounter = str(csvTimeCounter)
                 x.append(csvTimeCounter)
                 plotAvPCO2.append(avPCO2)
                 plotAvTemp.append(avTemp)
+                
+                print(x)
+                print(plotAvPCO2)
+                
 
-                """
-                x =[-20:]
-                plotAvPCO2 = [-20:]
-                plotAvTemp = [-20:]
-                """
+                x = x[-20:]
+                plotAvPCO2 = plotAvPCO2[-20:]
+                plotAvTemp = plotAvTemp[-20:]
 
-                fig, ax1 = plt.subplots(figsize=(25, 15))
 
-                plt.suptitle("Average pCO2 and Temp starting by " + date[0])
+                fig, ax1 = plt.subplots(figsize=(20, 12))
+
+                plt.suptitle("Average pCO2 and Temp")
+                ax1.clear()
 
                 color = 'tab:red'
                 ax1.set_xlabel('time (min)')
                 ax1.set_xticks(np.arange(0, len(x) + 1, 10))
                 ax1.set_ylabel('pCO2 in %', color=color)
+                #plt.hold(True)
                 ax1.plot(x, plotAvPCO2, color=color)
                 plt.xticks(rotation=25)
 
                 ax2 = ax1.twinx()
+                ax2.clear()
 
                 color = 'tab:blue'
                 ax2.set_ylabel('avTemp in °C', color=color)
+                ax2.set_ylim(20,35)
+                #plt.hold(True)
                 ax2.plot(plotAvTemp, color=color)
 
-                fig.tight_layout()
+                #fig.tight_layout()
+                #fig.canvas.draw()
+                #fig.canvas.flush_events()
+
                 plt.show(block=False)
 
-                print(avTemp)
+                print(plotAvTemp)
                 
                 sleep(10)  # Stops Loop for 10sec
 
@@ -225,7 +245,6 @@ while counter1 < 8:
                 loopedTime = 0
                 csvTimeCounter = 0
                 
-                x = []
 
 
             else:
