@@ -1,0 +1,30 @@
+
+----------------------------------------------------------------
+Code is running for 2575 minutes.
+
+
+
+
+
+----------------------------------------------------------------
+Code is running for 2576 minutes.
+Traceback (most recent call last):
+  File "/home/pi/Desktop/Measurement.py", line 78, in <module>
+    decoder = BinaryPayloadDecoder.fromRegisters(res.registers, byteorder='>', wordorder='>')
+AttributeError: 'ModbusIOException' object has no attribute 'registers'
+>>> %Run Measurement.py
+Give the slope from the calibration as a float and confirm with Enter:   -0.00102242
+Give the intercept from the calibration as a float and confirm with Enter:    0.25667741
+Give the R^2 from the calibration as a float and confirm with Enter:    0.74651233
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
+Please check the following things:
+Does the RS485-to-USB Adapter have power? Which LEDs are active?
+Are the cables connected correctly?
+Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.
+----------------------------------------------------------------
