@@ -18,7 +18,6 @@ client = ModbusSerialClient(
 # Counter
 counter1 = 0 #for median loop
 counter2 = 0 #for counting the days -> 5760 = 4days
-counter3 = 0 #for making and saving 5 plots for the diashow
 # Variables
 t = 0
 
@@ -92,11 +91,6 @@ while counter1 < 8:
 
             #after 1 min do this
             if counter1 == 6:
-                #loop for plot names -> to get diashow
-                if counter3 == 5:
-                    counter3 = 1
-                else:
-                    counter3 +=1
                     
                 #calculate median for 1 min
                 avPCO2 = np.median(summePCO2)
@@ -127,44 +121,7 @@ while counter1 < 8:
                     
                     writer.writerow(csvRow)
                     
-                csvTimeCounter = str(csvTimeCounter)
-                x.append(csvTimeCounter)
-                plotAvPCO2.append(avPCO2)
-                plotAvTemp.append(avTemp)
-
-                x = x[-20:]
-                plotAvPCO2 = plotAvPCO2[-20:]
-                plotAvTemp = plotAvTemp[-20:]
-
-                fig, ax1 = plt.subplots(figsize=(23, 13))
-
-                plt.suptitle('Average pCO2 and Temp starting at ' + adresseTime, fontsize = 20, fontweight='semibold')
-
-                color = 'tab:red'
-                ax1.set_xlabel('time (min)', fontsize = 18,fontweight='semibold')
-                ax1.set_xticks(np.arange(0, len(x)+1, 5))
-                plt.xticks(fontsize = 14)
-                ax1.set_ylabel('pCO2 in %', color = color, fontsize = 18,fontweight='semibold')
-                ax1.plot(x,plotAvPCO2, color = color, linewidth = 6)
-                plt.xticks(rotation = 25, fontweight='semibold')
-                plt.yticks(fontsize = 14, fontweight='semibold')
-
-                ax2 = ax1.twinx()
-
-                color = 'tab:blue'
-                ax2.set_ylabel('avTemp in °C', color = color, fontsize = 18,fontweight='semibold')
-                ax2.set_ylim(20,35)
-                ax2.plot(plotAvTemp, color = color, linewidth = 4)
-                plt.yticks(fontsize = 14, fontweight='semibold')
-
-                fig.tight_layout()
                 
-                fig.savefig('/media/pi/boot/pCO2_Sensor_Data/Plots/TestPlot_' + str(counter3) + '.png')
-                
-                sleep(10)  # Stops Loop for 10sec
-                
-                plt.close('all')
-                fig.clear()
 
                 print('----------------------------------------------------------------')
 
