@@ -19,6 +19,7 @@ client = ModbusSerialClient(
 counter1 = 0  # For getting the sum of 6 data points and getting the average after counter = 6
 counter2 = 0
 setCounter = 0
+counterMeasurement = 0
 
 # Variables
 t = 0
@@ -61,12 +62,12 @@ plotAvPCO2 = []
 plotAvTemp = []
 
 # Header CSV File
-header = ["Timestamp", "Time since start", "Probe", "pCo2", "Temp in C", "mbar", "DLI"]
+header = ["Timestamp", "Time since start", "Probe", "pCo2", "Temp in C", "mbar", "DLI", "Measurement Length in Minutes"]
 csvRow = []
 
-# adresse = '/media/pi/boot/pCO2_Sensor_Data/Calibration' + str(startTime)
+adresse = '/media/pi/boot/pCO2_Sensor_Data/Calibration' + str(startTime)
 
-with open('/home/pi/Desktop/Calibration' + '.csv', 'w') as file:
+with open(adresse + '.csv', 'w') as file:
     writer = csv.writer(file)
 
     writer.writerow(header)
@@ -81,6 +82,7 @@ print('4. 10.0 mbar')
 print('')
 setCounter = int(input('Please enter how many probes will be used for this calibration and confirm with Enter:    '))
 realTemp = float(input('Please give the mbar of the first probe as a float and confirm with Enter:   '))
+counterMeasurement = int(input('Please give how long this probe should be measured for this calibration in X minutes and confirm with Enter:    '))
 
 while counter1 < 8:
     while counter2 < setCounter:
@@ -128,8 +130,8 @@ while counter1 < 8:
 
                 print(counter1)
 
-                if counter1 == 6:
-                    # Calculate Median over 1 Min
+                if counter1 == counterMeasurement:
+                    # Calculate Median over X Min
 
                     avPCO2 = np.median(summePCO2)
                     avTemp = np.median(summeTemp)
@@ -149,6 +151,7 @@ while counter1 < 8:
                     csvRow.append(avTemp)
                     csvRow.append(avmbar)
                     csvRow.append(avDLI)
+                    csvRow.append(counterMeasurement)
 
                     calibrationPCO2.append(avPCO2)
                     calibrationX.append(realTemp)
@@ -156,7 +159,7 @@ while counter1 < 8:
                     #print(csvRow)
                     print('pCO2')
 
-                    with open('/home/pi/Desktop/Kalibration_1' + '.csv', 'a') as file:
+                    with open(adresse + '.csv', 'a') as file:
 
                         writer = csv.writer(file)
 
@@ -190,6 +193,7 @@ while counter1 < 8:
                     csvRow.pop(0)  # delete new 1. element -> Temp
                     csvRow.pop(0)  # delete new 1. element -> mbar
                     csvRow.pop(0)
+                    csvRow.pop(0)
                     csvRow.pop(0)  # delete last element
                     avCalibration = 0
                     loopedTime = 0
@@ -200,6 +204,8 @@ while counter1 < 8:
                     plotAvTemp = []
 
                     realTemp = float(input('Please give the mbar of the next probe as a float and confirm with Enter:   '))
+                    counterMeasurement = int(input('Please give how long this probe should be measured for this calibration in X minutes and confirm with Enter:    '))
+
 
                 else:
 
