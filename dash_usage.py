@@ -7,26 +7,24 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from time import time, ctime, sleep #import the time library
 from datetime import datetime, date, timedelta
+from dash.dependencies import Input, Output
 
 def import_data_from_csv(filename):
     data = pd.read_csv(filename, header = None, names = ['datetime','time','pCO2','temp','mbar','mlg'])
     print("imported data")
-#    x = data.loc[:,'time']
-#    y = data.loc[:,'temp']
+
     return data
+
 adresseTime = datetime.now().strftime('%Y.%m.%d')
 adresse = '/media/pi/boot/pCO2_Sensor_Data/CSV-Files/' + adresseTime +'.csv'
-#fname = adresse
 
-fname = 'D:\FS22\Paind\Dash\LongerTest_Start_20.04.2022_14.46.csv'
+#adressTime = '2022.05.09'
+#adresse = '/media/pi/boot/pCO2_Sensor_Data/CSV-Files/2022.05.09.csv'
+
+fname = adresse
 
 data = import_data_from_csv(fname)
-x = data.loc[:,'time']
-# y1 = data.loc[:,'temp']
-# y2 = data.loc[:,'pCO2']
-
-# fig = px.line(data, x="time", y="temp", )
-
+x = data.loc[:,'datetime']
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
  
@@ -42,28 +40,23 @@ fig.add_trace(
     secondary_y=True,)
 
 
-app = Dash(__name__)
+app = dash.Dash(__name__)
 
-app.layout = html.Div(children =[
-    dcc.Graph(
-        id = 'example',
-        figure = fig
-        ),
-    """
-    dcc.Slider(
-        data['time'].min(),
-        data['time'].max(),
-        step=None,
-        value=data['time'].min(),
-        marks={str(time): str(time) for time in data['time'].unique()},
-        id='time-slider')
-    """
-    dcc.Interval(
+app.layout = html.Div(
+    children = [
+        dcc.Interval(
         id='interval-component',
         interval=60*1000, # in milliseconds
         n_intervals=0
-        )
-    ])        
+        ),
+    html.Div([
+        dcc.Graph(
+            id = 'example',
+            figure = fig)
+
+        ])
+        ]
+    )
         
 #trying to create a refreshing loop
   
@@ -71,18 +64,20 @@ app.layout = html.Div(children =[
     Output('example', 'figure'),
     Input('interval-component', 'n_intervals'))
 def update_figure(n):
-    #fname = adresse
 
-    fname = 'D:\FS22\Paind\Dash\LongerTest_Start_20.04.2022_14.46.csv'
+    fname = adresse
 
     data = import_data_from_csv(fname)
-    x = data.loc[:, 'time']
+    x = data.loc[:, 'datetime']
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    # Adding title text to the figure
+    # Adding title text to the figure put adresseTime-Variable back in
     fig.update_layout(
-        title_text='Average pCO2 and Temperature starting at ' + adresseTime,
+        title_text='Average pCO2 and Temperature',
+        font=dict(family='Arial',
+                  size=16,
+                  color='rgb(37,37,37)'),
         autosize=False,
         width=1900,
         height=800,
@@ -94,6 +89,13 @@ def update_figure(n):
     # Naming y-axes
     fig.update_yaxes(title_text="Temp ", secondary_y=False)
     fig.update_yaxes(title_text="pCO2 ", secondary_y=True)
+    fig.update_layout(legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="right",
+        x=1
+    ))
 
     # plot a scatter chart by specifying the x and y values
     # Use add_trace function to specify secondary_y axes.
