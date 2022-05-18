@@ -22,7 +22,7 @@ setCounter = 0 #will be filled with the number of samples
 counterMeasurement = 0 #will be filled with the length of the measurement
 realSample = 0 #will be filled with the value of the sample 
 
-# Variables
+#variables
 t = 0
 
 pCO2 = 0
@@ -197,56 +197,49 @@ while counter1 < 1200: #counter1 will be set to 1201 after all samples & the cal
                     counterMeasurement = int(input('Please give how long this sample should be measured for this calibration in X minutes and confirm with Enter:    '))
 
 
-                else:
+                else: #if measurement length is not yet reached
 
-                    sleep(10)  # Stops Loop for 10sec
+                    sleep(10)  #stops Loop for 10sec
                     print('')
 
 
-            else:
-                print(res)  # Print Error Message, for meaning look at (insert git hub)
-                counter1 = 0
-                sleep(10)  # Stops Loop for 10sec
+            else: #if register gives error
+                print(res)  #print Error Message
+                counter1 = 0 #set counter1 = 0 to keep loop going
+                sleep(10)  #Stops Loop for 10sec
 
         else:  # If not able to connect, do this
+            #show in terminal to inform user
             print('Cannot connect to the Transmitter M80 SM and Sensor InPro 5000i.')
             print('----------------------------------------------------------------')
             print('Please check the following things:')
             print('Does the RS485-to-USB Adapter have power? Which LEDs are active?')
             print('Are the cables connected correctly?')
 
-            counter1 = 0
+            counter1 = 0 #set counter1 = 0 to keep loop going
             sleep(10)  # Stops Loop for 10sec
 
-    # calculate the slope & intercept
-    print('')
-    #print(calibrationPCO2)
-    #print(calibrationX)
+    #calculate the slope & intercept
     print('')
     print('The slope for this calibration is:')
     
-    slope, intercept = np.polyfit(calibrationX, calibrationPCO2,1)
+    slope, intercept = np.polyfit(calibrationX, calibrationPCO2,1) #define slope & intercept to be accurate to calibrationX & calibrationPCO2
     print(slope)
-    
     print('')
     print('The intercept for this calibration is:')
     print(intercept)
     
     # calculate r^2
     print('')
-    print('R^2 for this calibration is:')
-    
-    x = np.array(calibrationX)
-    #print(x)
-    x = x.reshape(-1,1)
-    #print(x)
-    
-    model = LinearRegression()
-    model.fit(x, calibrationPCO2)
-    rSq = model.score(x, calibrationPCO2)
-
+    print('R^2 for this calibration is:')    
+    x = np.array(calibrationX) #create mx1 matrix
+    x = x.reshape(-1,1) #translate mx1 to 1xn matrix
+    model = LinearRegression() #model linear regression
+    model.fit(x, calibrationPCO2) #specifiy model to x & calibrationPCO
+    rSq = model.score(x, calibrationPCO2) #calculate r^2 with the specified model
     print(rSq)
     
+    #create divider, second header & fill csvRow
     divider = []
     headerCalculations = ["Slope", "Intercept", "R^2"]
     csvRow = []
@@ -254,12 +247,12 @@ while counter1 < 1200: #counter1 will be set to 1201 after all samples & the cal
     csvRow.append(intercept)
     csvRow.append(rSq)
     
+    #write divider, second header & csvRow in csv file
     with open(adresse + '.csv', 'a') as file:
 
                         writer = csv.writer(file)
                         writer.writerow(divider)
                         writer.writerow(headerCalculations)
                         writer.writerow(csvRow)
-                        # writer.writerow(int(avCalibration))
     
-    counter1 = 1201
+    counter1 = 1201 #end code
