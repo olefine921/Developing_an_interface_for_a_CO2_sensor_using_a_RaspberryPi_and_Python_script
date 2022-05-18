@@ -110,7 +110,7 @@ while counter1 < 8:
                 csvTimeCounter = loopedTime - startTime
 
                 #add data to the list for writing into the csv file
-                #importan: order has to be the same as referenced in dash_usage.py
+                #important: if order of columns changes, this has to be updated in dash_usage.py & measurement.py
                 csvRow.append(dateForCSV)
                 csvRow.append(csvTimeCounter)
                 csvRow.append(avPCO2)
