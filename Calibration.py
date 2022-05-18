@@ -63,7 +63,7 @@ plotAvPCO2 = []
 plotAvTemp = []
 
 # Header CSV File
-header = ["Timestamp", "Time since start", "Sample", "pCo2", "Temp in C", "mbar", "DLI", "Measurement Length in Minutes"]
+header = ["Timestamp", "Time since start", "Sample", "pCo2", "Temp in C", "mbar", "mgl", "Measurement Length in Minutes"]
 csvRow = []
 
 adresseTime = datetime.now().strftime('%Y.%m.%d')
