@@ -20,6 +20,7 @@ counter1 = 0  #for doing X samples
 counter2 = 0 #for getting the median of X data points 
 setCounter = 0 #will be filled with the number of samples
 counterMeasurement = 0 #will be filled with the length of the measurement
+realSample = 0 #will be filled with the value of the sample 
 
 # Variables
 t = 0
@@ -79,103 +80,99 @@ print('')
 print('If wanted, the samples an be adjusted in value and number. The correct mbar for the samples has to be given as user input.')
 print('The code will ask for one sample too much. Please give any float as input for the last asked user input.')
 print('')
+#prompting user input
+#important: sample has to be in position before measurement length is confirmed, measurement starts immediately after confirmation
 setCounter = int(input('Please enter how many samples will be used for this calibration and confirm with Enter:    '))
 print('')
-realProbe = float(input('Please give the mbar of the first sample as a float and confirm with Enter:   '))
+realSample = float(input('Please give the mbar of the first sample as a float and confirm with Enter:   '))
 counterMeasurement = 6* int(input('Please give how long this sample should be measured for this calibration in X minutes and confirm with Enter:    '))
 
-while counter1 < 1200:
-    while counter2 < setCounter:
-        t = time()
-        dateForCSV = ctime(t)
+
+while counter1 < 1200: #counter1 will be set to 1201 after all samples & the calculations have been done, the code will end
+    while counter2 < setCounter: #loop will repeated until all samples have been measured
 
         print('')
 
-        if client.connect():  # Trying to connect to Modbus Server/Slave
-            # Reading from a holding register
+        if client.connect():  #trying to connect to Modbus Server/Slave
+            #reading from a holding register
             res = client.read_holding_registers(address=100, count=8,
-                                                unit=1)  # Startregister = 100, Registers to be read = 8, Answer size = 1 byte
-
+                                                unit=1)  #Startregister = 100, Registers to be read = 8, Answer size = 1 byte
+            
+            #define decoder for res (registers to be read) to get the organisation for big endian
+            #important: big endian = '>' 
             decoder = BinaryPayloadDecoder.fromRegisters(res.registers, byteorder='>', wordorder='>')
 
+            #use decoder to get values in 32-bit float big endian
             first_reading = decoder.decode_32bit_float()
             second_reading = decoder.decode_32bit_float()
             third_reading = decoder.decode_32bit_float()
             fourth_reading = decoder.decode_32bit_float()
 
-            if not res.isError():  # If Registers don't show Error
-                # print(res.registers)  # Print content of registers
-                # print(first_reading)
-                # print(second_reading)
-                # print(third_reading)
-                # print(fourth_reading)
-
+            if not res.isError():  #If Registers don't show Error
+                #save translated values as specific variables (not necessary but helpfull for logic)
                 pCO2 = first_reading
                 temp = second_reading
                 mbar = third_reading
-                DLI = fourth_reading
-
-
-                # print('')
-                # print('temp = ', temp)
+                DLI = fourth_reading #fourth register reads now mg/l, for less mistakes during coding, the old name has been left
 
                 summePCO2.append(pCO2)  # summePCO2 is the array of the pCO2s
                 summeTemp.append(temp)
                 summembar.append(mbar)
                 summeDLI.append(DLI)
 
-                # print('summeTemp = ', summeTemp)
+                counter1 += 1 #add after each measurement to reach the right measurement length
 
-                counter1 += 1
-
-                #print(counter1)
-
-                if counter1 == counterMeasurement:
-                    # Calculate Median over 1 Min
-
+                if counter1 == counterMeasurement: #if right measurement length is reached
+                    
+                    # Calculate Median over X Min
                     avPCO2 = np.median(summePCO2)
                     avTemp = np.median(summeTemp)
                     avmbar = np.median(summembar)
                     avDLI = np.median(summeDLI)
 
+                    #get times to fill csv file
                     t = time()
                     dateForCSV = ctime(t)
 
                     loopedTime = datetime.now()
                     csvTimeCounter = loopedTime - startTime
 
+                    #add data to the list for writing into the csv file
+                    #importan: keep order as in header declared
                     csvRow.append(dateForCSV)
                     csvRow.append(csvTimeCounter)
-                    csvRow.append(realTemp)
+                    csvRow.append(realSample)
                     csvRow.append(avPCO2)
                     csvRow.append(avTemp)
                     csvRow.append(avmbar)
                     csvRow.append(avDLI)
                     csvRow.append(counterMeasurement)
 
+                    #add the calculated median to a list for the calculation of slope, intercept & r^2
                     calibrationPCO2.append(avPCO2)
-                    calibrationX.append(realProbe)
+                    calibrationX.append(realSample)
 
 
+                    #show the median in the terminal
                     print('pCO2 = ' + str(avPCO2))
                     print('')
+                    
+                    #write the data in the csv file
                     with open(adresse + '.csv', 'a') as file:
 
                         writer = csv.writer(file)
 
                         writer.writerow(csvRow)
-                        # writer.writerow(int(avCalibration))
 
-                    counter2 += 1
-                    sleep(10)
+                    counter2 += 1 #add to counter2 for each sample done
 
-                    # set every variable back to 0
+                    #set every variable back to 0
                     counter1 = 0
                     pCO2 = 0
                     temp = 0
                     mbar = 0
                     DLI = 0
-                    realProbe = 0
+                    realSample = 0
 
                     summePCO2 = []
                     summeTemp = []
@@ -186,26 +183,17 @@ while counter1 < 1200:
                     avTemp = 0
                     avmbar = 0
                     avDLI = 0
-
-                    # clear csvRow-List
-                    csvRow.pop(0)  # delete 1. element -> Timestamp
-                    csvRow.pop(0)  # delete new 1. element -> avPCO2
-                    csvRow.pop(0)  # delete new 1. element -> Temp
-                    csvRow.pop(0)  # delete new 1. element -> mbar
-                    csvRow.pop(0)
-                    csvRow.pop(0)
-                    csvRow.pop(0)
-                    csvRow.pop(0)  # delete last element
-                    avCalibration = 0
+                    
                     loopedTime = 0
                     csvTimeCounter = 0
-
-                    x = []
-                    plotAvPCO2 = []
-                    plotAvTemp = []
                     
+                    #clear csvRow-List
+                    csvRow = []
+                    
+                    #prompt user input for next sample
+                    #important: sample has to be in position before measurement length is confirmed, measurement starts immediately after confirmation
                     print('If this was your last sample, give (now) any float') #maybe need to write more specific instruction
-                    realProbe = float(input('Please give the mbar of the next sample as a float and confirm with Enter:   '))
+                    realSample = float(input('Please give the mbar of the next sample as a float and confirm with Enter:   '))
                     counterMeasurement = int(input('Please give how long this sample should be measured for this calibration in X minutes and confirm with Enter:    '))
 
 
@@ -274,4 +262,4 @@ while counter1 < 1200:
                         writer.writerow(csvRow)
                         # writer.writerow(int(avCalibration))
     
-    counter1 = 9
+    counter1 = 1201
