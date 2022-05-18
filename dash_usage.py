@@ -1,13 +1,14 @@
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import pandas as pd
-import plotly.express as px
+import dash #import dash
+from dash import dcc #import dash core components
+from dash import html #import dash html components
+import pandas as pd #import pandas for calculations, measurement.py uses numpy for calculation
+import plotly.express as px #import plotly modules
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from time import time, ctime, sleep #import the time library
+from time import time, ctime, sleep #import the time & datetime library
 from datetime import datetime, date, timedelta
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output #import to enable callback
+
 
 def import_data_from_csv(filename):
     data = pd.read_csv(filename, header = None, names = ['datetime','time','pCO2','temp','mbar','mlg'])
