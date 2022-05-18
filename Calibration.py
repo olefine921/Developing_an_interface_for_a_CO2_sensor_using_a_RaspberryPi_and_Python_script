@@ -1,26 +1,25 @@
-from pymodbus.client.sync import ModbusSerialClient  # Import the pymodbus library part for syncronous master (=client)
-from pymodbus.payload import BinaryPayloadDecoder
-from time import time, ctime, sleep  # import the time library
+from pymodbus.client.sync import ModbusSerialClient  #import the pymodbus library part for syncronous master (=client)
+from pymodbus.payload import BinaryPayloadDecoder #import the BinaryPayloadDecoder to translate signals
+from time import time, ctime, sleep  #import the time & datetime libraries
 from datetime import datetime, date, timedelta
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.linear_model import LinearRegression
-import csv  # Import the csv library
+import numpy as np #import numpy for all calculations
+from sklearn.linear_model import LinearRegression  #import to calculate slope, intercept & R^2
+import csv  #import the csv library for documentation
 
 client = ModbusSerialClient(
-    method='rtu',  # Modbus Modus = RTU = via USB & RS485
-    port='/dev/ttyUSB0',  # Connected over ttyUSB0, not AMA0
-    baudrate=19200,  # Baudrate was changed from 38400 to 19200
-    timeout=3,  #
-    parity='N',  # Parity = None
-    stopbits=2,  # Bites was changed from 1 to 2
-    bytesize=8  #
+    method='rtu',  #Modbus Modus = RTU = via USB & RS485
+    port='/dev/ttyUSB0',  #connected over ttyUSB0, not AMA0
+    baudrate=19200,  #Baudrate was changed from 38400 to 19200
+    timeout=3,  #Timeout after 3 sec of unanswered calls
+    parity='N',  #Parity = None
+    stopbits=2,  #Bites was changed from 1 to 2
+    bytesize=8  #Register size is 8 bytes
 )
 # Counter
-counter1 = 0  # For getting the sum of 6 data points and getting the average after counter = 6
-counter2 = 0
-setCounter = 0
-counterMeasurement = 0
+counter1 = 0  #for doing X samples
+counter2 = 0 #for getting the median of X data points 
+setCounter = 0 #will be filled with the number of samples
+counterMeasurement = 0 #will be filled with the length of the measurement
 
 # Variables
 t = 0
@@ -29,7 +28,6 @@ pCO2 = 0
 temp = 0
 mbar = 0
 DLI = 0
-calibration = 0
 
 summePCO2 = []
 summeTemp = []
@@ -48,32 +46,30 @@ second_reading = 0
 third_reading = 0
 fourth_reading = 0
 
-# calibration Variables (specific)
+#calibration variables (specific)
 calibrationPCO2 = []
 calibrationX = []
 
-# variables only for plotting
+#variables for getting time
 startTime = datetime.now()
 loopedTime = 0
 csvTimeCounter = 0
 
-date = []
-x = []
-plotAvPCO2 = []
-plotAvTemp = []
-
-# Header CSV File
+#Header & lines for csv file
 header = ["Timestamp", "Time since start", "Sample", "pCo2", "Temp in C", "mbar", "mgl", "Measurement Length in Minutes"]
 csvRow = []
 
+#creating of the file name & path
 adresseTime = datetime.now().strftime('%Y.%m.%d')
 adresse = '/media/pi/boot/pCO2_Sensor_Data/CSV-Files/Calibration_' + adresseTime
 
+#creating csv file & writing header
 with open(adresse + '.csv', 'w') as file:
     writer = csv.writer(file)
 
     writer.writerow(header)
 
+#explanation for user, will be printed in terminal
 print('Please prepare the following samples:') #Probes should be on a brought spectrum
 print('1. 0.1 mbar')
 print('2. 1.0 mbar')
